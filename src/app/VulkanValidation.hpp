@@ -3,7 +3,11 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
+#ifdef _DEBUG
 const bool validationEnabled = true;
+#else
+const bool validationEnabled = false;
+#endif
 
 // List of validation layers to use
 // VK_LAYER_LUNARG_standard_validation = All standard validation layers
