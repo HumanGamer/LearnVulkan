@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include "VulkanValidation.hpp"
 #include "Utilities.hpp"
 
 class VulkanRenderer
@@ -23,6 +24,7 @@ private:
 
     // Vulkan Components
     VkInstance mInstance;
+    VkDebugUtilsMessengerEXT callback;
     struct
     {
         VkPhysicalDevice physicalDevice;
@@ -33,6 +35,8 @@ private:
     // Vulkan Functions
     // - Create Functions
     void createInstance();
+    void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
+    void createDebugCallback();
     void createLogicalDevice();
 
     // - Get Functions
@@ -41,6 +45,7 @@ private:
     // - Support Functions
     // -- Checker Functions
     bool checkInstanceExtensionsSupport(std::vector<const char*>* checkExtensions);
+    bool checkValidationLayerSupport();
     bool checkDeviceSuitable(VkPhysicalDevice device);
 
     // -- Getter Functions
