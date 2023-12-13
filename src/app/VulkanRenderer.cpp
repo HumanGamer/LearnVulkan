@@ -5,11 +5,6 @@ VulkanRenderer::VulkanRenderer()
 
 }
 
-VulkanRenderer::~VulkanRenderer()
-{
-
-}
-
 int VulkanRenderer::init(GLFWwindow* newWindow)
 {
     mWindow = newWindow;
@@ -27,6 +22,21 @@ int VulkanRenderer::init(GLFWwindow* newWindow)
     }
 
     return 0;
+}
+
+void VulkanRenderer::cleanup()
+{
+    vkDestroyDevice(mMainDevice.logicalDevice, nullptr);
+    if (validationEnabled)
+    {
+        DestroyDebugUtilsMessengerEXT(mInstance, callback, nullptr);
+    }
+    vkDestroyInstance(mInstance, nullptr);
+}
+
+VulkanRenderer::~VulkanRenderer()
+{
+
 }
 
 void VulkanRenderer::createInstance()
@@ -135,48 +145,6 @@ void VulkanRenderer::createDebugCallback()
     }
 }
 
-bool VulkanRenderer::checkInstanceExtensionsSupport(std::vector<const char *> *checkExtensions)
-{
-    // Need to get number of extensions to create array of correct size to hole extensions
-    uint32_t extensionCount = 0;
-    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-
-    // Create a list of VkExtensionProperties using count
-    std::vector<VkExtensionProperties> extensions(extensionCount);
-    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
-
-    // Check if given extensions are in list of available extensions
-    for (const auto &checkExtension : *checkExtensions)
-    {
-        bool hasExtension = false;
-        for (const auto &extension : extensions)
-        {
-            if (strcmp(checkExtension, extension.extensionName) == 0)
-            {
-                hasExtension = true;
-                break;
-            }
-        }
-
-        if (!hasExtension)
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-void VulkanRenderer::cleanup()
-{
-    vkDestroyDevice(mMainDevice.logicalDevice, nullptr);
-    if (validationEnabled)
-    {
-        DestroyDebugUtilsMessengerEXT(mInstance, callback, nullptr);
-    }
-    vkDestroyInstance(mInstance, nullptr);
-}
-
 void VulkanRenderer::createLogicalDevice()
 {
     // Get the queue family indices for the chosen Physical Device
@@ -240,6 +208,38 @@ void VulkanRenderer::getPhysicalDevice()
             break;
         }
     }
+}
+
+bool VulkanRenderer::checkInstanceExtensionsSupport(std::vector<const char *> *checkExtensions)
+{
+    // Need to get number of extensions to create array of correct size to hole extensions
+    uint32_t extensionCount = 0;
+    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+
+    // Create a list of VkExtensionProperties using count
+    std::vector<VkExtensionProperties> extensions(extensionCount);
+    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
+
+    // Check if given extensions are in list of available extensions
+    for (const auto &checkExtension : *checkExtensions)
+    {
+        bool hasExtension = false;
+        for (const auto &extension : extensions)
+        {
+            if (strcmp(checkExtension, extension.extensionName) == 0)
+            {
+                hasExtension = true;
+                break;
+            }
+        }
+
+        if (!hasExtension)
+        {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 bool VulkanRenderer::checkValidationLayerSupport()
